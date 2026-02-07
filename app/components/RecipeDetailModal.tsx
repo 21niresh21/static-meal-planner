@@ -132,7 +132,7 @@ const RecipeDetailModal: React.FC<RecipeDetailModalProps> = ({ recipe, open, onC
             </Box>
           </Box>
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <MoneyIcon sx={{ fontSize: 20, mr: 1, color: 'primary.main' }} />
+            {/* <MoneyIcon sx={{ fontSize: 20, mr: 1, color: 'primary.main' }} /> */}
             <Box>
               <Typography variant="caption" color="text.secondary" display="block">
                 Cost/Serving

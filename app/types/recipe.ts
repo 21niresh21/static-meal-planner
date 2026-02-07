@@ -1,3 +1,5 @@
+export type MealType = 'Breakfast' | 'Lunch' | 'Dinner' | 'Snack';
+
 export interface Macros {
   calories: number;
   protein: number;
@@ -23,4 +25,5 @@ export interface Recipe {
   ingredients: Ingredient[];
   instructions: string[];
   tags: string[];
+  mealType: MealType;
 }

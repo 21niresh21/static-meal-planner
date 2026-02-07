@@ -1,15 +1,16 @@
 # Meal Planner - Static Recipe Application
 
-A beautiful static web application displaying recipes with complete nutritional information, macros, and cost per serving. Built with Next.js and Material-UI.
+A beautiful static web application displaying recipes organized by meal type (Breakfast, Lunch, Dinner, Snacks) with complete nutritional information, macros, and cost per serving. Built with Next.js and Material-UI.
 
 ## Features
 
+- 🍳 **Organized by Meal Type**: Recipes categorized into Breakfast, Lunch, Dinner, and Snacks
 - 📊 **Complete Macro Information**: Calories, Protein, Carbs, and Fat for each recipe
 - 💰 **Cost Per Serving**: Track the cost of each meal in Indian Rupees (₹)
 - ⏱️ **Prep & Cook Times**: Plan your cooking schedule
 - 🎨 **Beautiful UI**: Modern, responsive design with smooth animations
 - 📱 **Mobile Friendly**: Fully responsive layout
-- 🔄 **Drag & Drop Reordering**: Rearrange recipes to your preference - order is saved automatically
+- 🔄 **Drag & Drop Reordering**: Rearrange recipes within each meal category - order is saved automatically
 - 👆 **Click for Details**: Click any recipe card to view full details, ingredients, and step-by-step instructions
 - 💾 **Persistent Order**: Your custom recipe order is saved in browser localStorage and persists across sessions
 
@@ -67,6 +68,7 @@ Here's the template for adding a new recipe:
     // Add more steps as needed
   ],
   tags: ['Tag1', 'Tag2', 'Tag3'], // e.g., 'High Protein', 'Vegan', 'Quick'
+  mealType: 'Lunch', // 'Breakfast', 'Lunch', 'Dinner', or 'Snack'
 }
 ```
 

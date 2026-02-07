@@ -1,21 +1,57 @@
 'use client'
 
 import { useState, useEffect } from 'react';
-import { Container, Typography, Box } from '@mui/material';
+import { Container, Typography, Box, Chip, Tabs, Tab } from '@mui/material';
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from '@dnd-kit/core';
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, rectSortingStrategy } from '@dnd-kit/sortable';
 import { recipes as initialRecipes } from './data/recipes';
-import { Recipe } from './types/recipe';
+import { Recipe, MealType } from './types/recipe';
 import DraggableRecipeCard from './components/DraggableRecipeCard';
 import RecipeDetailModal from './components/RecipeDetailModal';
 
 const STORAGE_KEY = 'meal-planner-recipe-order';
+
+const mealTypes: MealType[] = ['Breakfast', 'Lunch', 'Dinner', 'Snack'];
+
+const mealIcons: Record<MealType, string> = {
+  'Breakfast': '🌅',
+  'Lunch': '☀️',
+  'Dinner': '🌙',
+  'Snack': '🍎',
+};
+
+interface TabPanelProps {
+  children?: React.ReactNode;
+  index: number;
+  value: number;
+}
+
+function TabPanel(props: TabPanelProps) {
+  const { children, value, index, ...other } = props;
+
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`meal-tabpanel-${index}`}
+      aria-labelledby={`meal-tab-${index}`}
+      {...other}
+    >
+      {value === index && (
+        <Box sx={{ py: 3 }}>
+          {children}
+        </Box>
+      )}
+    </div>
+  );
+}
 
 export default function Home() {
   const [recipes, setRecipes] = useState<Recipe[]>(initialRecipes);
   const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
+  const [activeTab, setActiveTab] = useState(0);
 
   // Load saved order from localStorage on mount
   useEffect(() => {
@@ -82,6 +118,84 @@ export default function Home() {
     setTimeout(() => setSelectedRecipe(null), 200); // Clear after animation
   };
 
+  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+    setActiveTab(newValue);
+  };
+
+  // Group recipes by meal type
+  const getRecipesByMealType = (mealType: MealType) => {
+    return recipes.filter(r => r.mealType === mealType);
+  };
+
+  const renderRecipeGrid = (mealType: MealType) => {
+    const mealRecipes = getRecipesByMealType(mealType);
+    
+    if (mealRecipes.length === 0) {
+      return (
+        <Box sx={{ textAlign: 'center', py: 8 }}>
+          <Typography variant="h6" color="text.secondary">
+            No {mealType.toLowerCase()} recipes yet
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+            Add some delicious {mealType.toLowerCase()} recipes to get started!
+          </Typography>
+        </Box>
+      );
+    }
+
+    return (
+      <>
+        {!isMounted ? (
+          // Server-side render: simple grid without drag-drop
+          <Box sx={{ 
+            display: 'grid',
+            gridTemplateColumns: {
+              xs: '1fr',
+              sm: 'repeat(2, 1fr)',
+              md: 'repeat(3, 1fr)'
+            },
+            gap: 3
+          }}>
+            {mealRecipes.map((recipe) => (
+              <DraggableRecipeCard 
+                key={recipe.id} 
+                recipe={recipe} 
+                onClick={() => handleCardClick(recipe)}
+              />
+            ))}
+          </Box>
+        ) : (
+          // Client-side render: with drag-drop functionality
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragEnd={handleDragEnd}
+          >
+            <SortableContext items={mealRecipes.map(r => r.id)} strategy={rectSortingStrategy}>
+              <Box sx={{ 
+                display: 'grid',
+                gridTemplateColumns: {
+                  xs: '1fr',
+                  sm: 'repeat(2, 1fr)',
+                  md: 'repeat(3, 1fr)'
+                },
+                gap: 3
+              }}>
+                {mealRecipes.map((recipe) => (
+                  <DraggableRecipeCard 
+                    key={recipe.id} 
+                    recipe={recipe} 
+                    onClick={() => handleCardClick(recipe)}
+                  />
+                ))}
+              </Box>
+            </SortableContext>
+          </DndContext>
+        )}
+      </>
+    );
+  };
+
   return (
     <Box sx={{ bgcolor: 'background.default', minHeight: '100vh', py: 4 }}>
       <Container maxWidth="lg">
@@ -101,67 +215,76 @@ export default function Home() {
           >
             Meal Planner
           </Typography>
-          <Typography variant="h6" color="text.secondary" sx={{ fontWeight: 400 }}>
-            Delicious recipes with complete nutritional information
+          <Typography variant="h6" color="text.secondary" sx={{ fontWeight: 400, mb: 1 }}>
+            Plan your day with delicious recipes across all meals
           </Typography>
-          <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 1 }}>
+          <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>
             💡 Drag and drop to reorder • Click to view details
           </Typography>
         </Box>
 
-        {/* Recipe Grid with Drag and Drop */}
-        {!isMounted ? (
-          // Server-side render: simple grid without drag-drop
-          <Box sx={{ 
-            display: 'grid',
-            gridTemplateColumns: {
-              xs: '1fr',
-              sm: 'repeat(2, 1fr)',
-              md: 'repeat(3, 1fr)'
-            },
-            gap: 3
-          }}>
-            {initialRecipes.map((recipe) => (
-              <DraggableRecipeCard 
-                key={recipe.id} 
-                recipe={recipe} 
-                onClick={() => handleCardClick(recipe)}
-              />
-            ))}
-          </Box>
-        ) : (
-          // Client-side render: with drag-drop functionality
-          <DndContext
-            sensors={sensors}
-            collisionDetection={closestCenter}
-            onDragEnd={handleDragEnd}
+        {/* Meal Type Tabs */}
+        <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
+          <Tabs 
+            value={activeTab} 
+            onChange={handleTabChange}
+            variant="fullWidth"
+            sx={{
+              '& .MuiTab-root': {
+                fontSize: { xs: '0.875rem', sm: '1rem' },
+                fontWeight: 600,
+                textTransform: 'none',
+                minHeight: 64,
+              },
+            }}
           >
-            <SortableContext items={recipes.map(r => r.id)} strategy={rectSortingStrategy}>
-              <Box sx={{ 
-                display: 'grid',
-                gridTemplateColumns: {
-                  xs: '1fr',
-                  sm: 'repeat(2, 1fr)',
-                  md: 'repeat(3, 1fr)'
-                },
-                gap: 3
-              }}>
-                {recipes.map((recipe) => (
-                  <DraggableRecipeCard 
-                    key={recipe.id} 
-                    recipe={recipe} 
-                    onClick={() => handleCardClick(recipe)}
-                  />
-                ))}
-              </Box>
-            </SortableContext>
-          </DndContext>
-        )}
+            {mealTypes.map((mealType, index) => {
+              const count = getRecipesByMealType(mealType).length;
+              return (
+                <Tab 
+                  key={mealType}
+                  label={
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <span style={{ fontSize: '1.5rem' }}>{mealIcons[mealType]}</span>
+                      <Box>
+                        <Typography variant="body1" sx={{ fontWeight: 600 }}>
+                          {mealType}
+                        </Typography>
+                        <Chip 
+                          label={count} 
+                          size="small" 
+                          sx={{ 
+                            height: 20, 
+                            fontSize: '0.75rem',
+                            mt: 0.5,
+                          }} 
+                        />
+                      </Box>
+                    </Box>
+                  }
+                  id={`meal-tab-${index}`}
+                  aria-controls={`meal-tabpanel-${index}`}
+                />
+              );
+            })}
+          </Tabs>
+        </Box>
+
+        {/* Tab Panels */}
+        {mealTypes.map((mealType, index) => (
+          <TabPanel key={mealType} value={activeTab} index={index}>
+            {renderRecipeGrid(mealType)}
+          </TabPanel>
+        ))}
 
         {/* Footer Stats */}
         <Box sx={{ mt: 6, textAlign: 'center', py: 3, borderTop: '1px solid', borderColor: 'divider' }}>
           <Typography variant="body2" color="text.secondary">
-            {recipes.length} {recipes.length === 1 ? 'Recipe' : 'Recipes'} Available
+            {recipes.length} Total {recipes.length === 1 ? 'Recipe' : 'Recipes'} • 
+            {' '}{getRecipesByMealType('Breakfast').length} Breakfast • 
+            {' '}{getRecipesByMealType('Lunch').length} Lunch • 
+            {' '}{getRecipesByMealType('Dinner').length} Dinner • 
+            {' '}{getRecipesByMealType('Snack').length} Snacks
           </Typography>
         </Box>
       </Container>
