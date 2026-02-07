@@ -1,0 +1,80 @@
+import { Recipe } from '../types/recipe';
+
+export const recipes: Recipe[] = [
+    {
+        id: '1',
+        title: 'Lemon Herb Grilled Salmon',
+        description: 'A fresh and healthy salmon dish packed with zesty lemon and aromatic herbs, served with crisp asparagus.',
+        image: 'https://images.unsplash.com/photo-1467003909585-2f8a72700288?q=80&w=1000&auto=format&fit=crop',
+        prepTime: '10 mins',
+        cookTime: '15 mins',
+        servings: 2,
+        costPerServing: 700,
+        macros: {
+            calories: 420,
+            protein: 38,
+            carbs: 8,
+            fat: 26,
+        },
+        ingredients: [
+            { name: 'Salmon fillets', amount: '2 (6oz each)' },
+            { name: 'Asparagus', amount: '1 bunch' },
+            { name: 'Lemon', amount: '1 large' },
+            { name: 'Olive oil', amount: '2 tbsp' },
+            { name: 'Garlic', amount: '2 cloves, minced' },
+            { name: 'Fresh dill', amount: '1 tbsp, chopped' },
+            { name: 'Salt & Pepper', amount: 'to taste' },
+        ],
+        instructions: [
+            'Preheat your grill or grill pan to medium-high heat.',
+            'Toss asparagus with 1 tbsp olive oil, salt, and pepper.',
+            'In a small bowl, whisk together remaining olive oil, lemon juice, garlic, and dill.',
+            'Season salmon fillets with salt and pepper, then brush with the herb mixture.',
+            'Grill salmon for 4-5 minutes per side until cooked through.',
+            'Grill asparagus for 3-5 minutes until tender-crisp.',
+            'Serve immediately with lemon wedges.'
+        ],
+        tags: ['High Protein', 'Gluten-Free', 'Healthy'],
+    },
+    {
+        id: '2',
+        title: 'Paneer Tikka Masala',
+        description: 'Creamy and flavorful Indian curry with marinated paneer cubes in a rich tomato-based gravy.',
+        image: 'https://images.unsplash.com/photo-1631452180519-c014fe946bc7?q=80&w=1000&auto=format&fit=crop',
+        prepTime: '20 mins',
+        cookTime: '25 mins',
+        servings: 4,
+        costPerServing: 180,
+        macros: {
+            calories: 380,
+            protein: 18,
+            carbs: 22,
+            fat: 24,
+        },
+        ingredients: [
+            { name: 'Paneer (cottage cheese)', amount: '400g, cubed' },
+            { name: 'Yogurt', amount: '1/2 cup' },
+            { name: 'Tomatoes', amount: '4 large, pureed' },
+            { name: 'Onions', amount: '2 medium, chopped' },
+            { name: 'Ginger-garlic paste', amount: '2 tbsp' },
+            { name: 'Cream', amount: '1/4 cup' },
+            { name: 'Garam masala', amount: '1 tsp' },
+            { name: 'Kashmiri red chili powder', amount: '1 tsp' },
+            { name: 'Kasuri methi (dried fenugreek)', amount: '1 tsp' },
+            { name: 'Oil', amount: '3 tbsp' },
+            { name: 'Salt', amount: 'to taste' },
+        ],
+        instructions: [
+            'Marinate paneer cubes with yogurt, half the garam masala, and salt for 15 minutes.',
+            'Heat 2 tbsp oil in a pan and lightly fry the marinated paneer until golden. Set aside.',
+            'In the same pan, add remaining oil and sauté onions until golden brown.',
+            'Add ginger-garlic paste and cook for 2 minutes until fragrant.',
+            'Add tomato puree, chili powder, and salt. Cook until oil separates (about 10 minutes).',
+            'Add cream and remaining garam masala. Mix well.',
+            'Add the fried paneer cubes and simmer for 5 minutes.',
+            'Crush kasuri methi between your palms and sprinkle on top.',
+            'Serve hot with naan or rice.'
+        ],
+        tags: ['Vegetarian', 'Indian', 'Comfort Food'],
+    }
+];
